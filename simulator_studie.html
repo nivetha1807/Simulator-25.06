@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fahrzeugassistent, Nutzerstudie</title>
+<style>
+  :root{
+    --bg:#0e0f12; --panel:#16181d; --panel2:#1d2026; --line:#2a2e36;
+    --text:#eef1f5; --muted:#9aa3af; --soft:#c4cad3;
+    --empf:#5AA0E6; --pro:#56C28A; --accent:#e7eaef;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:"Segoe UI",Arial,Helvetica,sans-serif;line-height:1.5}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 20px 80px}
+  h1{font-weight:600;font-size:24px;margin:0 0 6px}
+  h2{font-weight:600;font-size:18px;margin:22px 0 8px}
+  h3{font-weight:600;font-size:15px;margin:24px 0 4px;color:var(--soft)}
+  p{margin:8px 0}
+  .muted{color:var(--muted)}
+  .panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;margin:16px 0}
+  .eyebrow{font-size:13px;letter-spacing:.4px;color:var(--muted);margin-bottom:6px}
+  .btn{background:var(--panel2);color:var(--text);border:1px solid var(--line);
+    border-radius:10px;padding:10px 16px;font-size:15px;cursor:pointer}
+  .btn:hover{border-color:#3a3f49}
+  .btn.primary{background:var(--accent);color:#15171c;border-color:var(--accent);font-weight:600}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:10px}
+  #intro p{margin:8px 0;color:var(--soft);font-size:14.5px}
+  .consent{margin-top:20px;display:flex;gap:10px;align-items:flex-start}
+  .consent label{margin:0;color:var(--text);font-size:14px}
+  .hint{margin-top:20px;font-size:14px;color:var(--muted)}
+  #btnStart{width:100%;padding:16px;margin-top:16px;font-size:16px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .between{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:22px}
+  .mainhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  input[type=text],input[type=number],textarea,select{width:100%;background:var(--panel2);border:1px solid var(--line);
+    color:var(--text);border-radius:10px;padding:10px 12px;font-size:15px;font-family:inherit}
+  textarea{min-height:90px;resize:vertical}
+  label{display:block;margin:0 0 4px;color:var(--soft);font-size:14px}
+  label.field{display:block;margin:14px 0 6px;color:var(--soft);font-size:14px}
+  .opt{background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+    padding:9px 14px;cursor:pointer;font-size:14px;color:var(--soft)}
+  .opt:hover{border-color:#3a3f49}
+  .opt.sel{border-color:var(--accent);background:#272b33;color:var(--text);font-weight:600}
+  .hidden{display:none !important}
+  .sit{background:#13151a;border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin:14px 0}
+  .sit .eyebrow{margin-bottom:8px}
+  .sit p{margin:0;color:var(--text);font-size:15.5px}
+  .assist{background:linear-gradient(180deg,#13151a,#0c0d11);border:1px solid var(--line);
+    border-left:6px solid var(--line);border-radius:16px;padding:18px 20px;margin:14px 0}
+  .assist.pro{border-left-color:var(--pro)}
+  .assist.empf{border-left-color:var(--empf)}
+  .assisthead{display:flex;justify-content:space-between;align-items:center}
+  .pill{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.4px;
+    padding:5px 12px;border-radius:999px;text-transform:uppercase;border:1px solid transparent}
+  .pill.pro{background:rgba(86,194,138,.14);color:var(--pro);border-color:rgba(86,194,138,.35)}
+  .pill.empf{background:rgba(90,160,230,.14);color:var(--empf);border-color:rgba(90,160,230,.35)}
+  .icons{display:flex;gap:10px;margin:16px 0 6px}
+  .ic{width:46px;height:46px;border-radius:12px;background:#0c0d11;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center}
+  .ic svg{width:24px;height:24px;stroke:var(--accent);fill:none;stroke-width:1.7}
+  .assist.pro .ic{border-color:rgba(86,194,138,.4)} .assist.pro .ic svg{stroke:var(--pro)}
+  .assist.empf .ic{border-color:rgba(90,160,230,.4)} .assist.empf .ic svg{stroke:var(--empf)}
+  .msg{font-size:19px;font-weight:600;margin:8px 0 6px;line-height:1.35}
+  .funk{font-size:14px;color:var(--muted);margin:2px 0 0}
+  .funk b{color:var(--soft);font-weight:600}
+  .footline{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:13.5px}
+  .footline.pro{color:var(--pro)} .footline.empf{color:var(--muted)}
+  .acceptrow{display:flex;gap:10px;margin-top:10px}
+  details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  details summary{cursor:pointer;color:var(--soft);font-size:14px}
+  details .inner{font-size:14px;color:var(--muted);margin-top:8px}
+  .leit{background:#14161b;border:1px dashed var(--line);border-radius:12px;padding:14px 16px;margin-top:16px}
+  .leit .t{font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:6px}
+  .leit ul{margin:0;padding-left:18px}
+  .leit li{margin:5px 0;color:var(--soft);font-size:14px}
+  .prog{height:5px;background:var(--panel2);border-radius:999px;overflow:hidden;margin:0 0 14px}
+  .prog div{height:100%;background:var(--accent);width:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <section id="intro">
+    <div class="panel">
+      <div class="eyebrow">Nutzerstudie zur Bachelorarbeit</div>
+      <h1>Zwischen Systemempfehlung und proaktiver Ausführung:<br>Eine qualitative Untersuchung der Nutzerakzeptanz KI-generierter Fahrzeugfunktionen</h1>
+
+      <p>Diese Studie ist Teil einer Bachelorarbeit und untersucht die Nutzerakzeptanz unterschiedlicher Interaktionsformen in KI-basierten Fahrzeugsystemen, insbesondere den Unterschied zwischen <strong>systemseitigen Empfehlungen</strong> und <strong>proaktiver Systemausführung</strong>.</p>
+      <p>Die Teilnahme an dieser Studie ist freiwillig. Sie können die Untersuchung jederzeit ohne Angabe von Gründen abbrechen.</p>
+      <p>Im Rahmen der Studie werden Ihre Eingaben, also Antworten auf Szenarien und optionale Freitextkommentare, ausschließlich zu wissenschaftlichen Zwecken im Kontext dieser Bachelorarbeit verarbeitet. Es erfolgt keine Weitergabe an Dritte.</p>
+      <p>Die Daten werden anonymisiert beziehungsweise pseudonymisiert gespeichert. Die erzeugte Studien-ID dient ausschließlich der Zuordnung der Antworten innerhalb der Studie und lässt keinen direkten Rückschluss auf Ihre Person zu.</p>
+      <p>Es werden keine sensiblen personenbezogenen Daten im Sinne der DSGVO erhoben. Vor- und Nachname werden lediglich zur Generierung einer zufälligen Studienkennung verwendet und nicht separat gespeichert.</p>
+
+      <h3>Studienkennung</h3>
+      <p class="muted" style="margin-top:0">Aus den Initialen entsteht eine anonyme Kennung. Vor- und Nachname werden nicht gespeichert.</p>
+      <div class="grid2">
+        <div><label for="vName">Vorname</label><input id="vName" type="text" autocomplete="off" placeholder="z. B. Max"></div>
+        <div><label for="nName">Nachname</label><input id="nName" type="text" autocomplete="off" placeholder="z. B. Mustermann"></div>
+      </div>
+
+      <div class="consent">
+        <input id="consent" type="checkbox">
+        <label for="consent">Ich bin einverstanden, dass meine bewerteten Antworten anonymisiert erhoben und für diese Bachelorarbeit ausgewertet werden.</label>
+      </div>
+
+      <div class="hint" id="loadInfo">Bitte Namen eingeben und Einwilligung bestaetigen.</div>
+      <button id="btnWeiter" class="btn primary" disabled>Weiter</button>
+    </div>
+  </section>
+
+  <section id="demo" class="hidden">
+    <div class="panel">
+      <div class="eyebrow">Schritt 2 von 2</div>
+      <h1>Angaben zur Person</h1>
+      <p class="muted">Diese Angaben beschreiben anonym die Stichprobe und sind freiwillig.</p>
+      <div class="grid2">
+        <div><label for="demo_alter">Alter</label><input id="demo_alter" type="number" min="16" max="120" autocomplete="off"></div>
+        <div><label for="demo_geschlecht">Geschlecht</label>
+          <select id="demo_geschlecht"><option value="">bitte wählen</option><option>weiblich</option><option>männlich</option><option>divers</option><option>keine Angabe</option></select></div>
+        <div><label for="demo_bildung">Höchster Bildungsabschluss oder Beruf</label><input id="demo_bildung" type="text" autocomplete="off"></div>
+        <div><label for="demo_technik">Technikaffinität</label>
+          <select id="demo_technik"><option value="">bitte wählen</option><option>gering</option><option>mittel</option><option>hoch</option></select></div>
+        <div><label for="demo_fs">Führerschein seit (Jahr)</label><input id="demo_fs" type="number" min="1950" max="2026" autocomplete="off"></div>
+        <div><label for="demo_fahrzeug">Aktuelles Fahrzeug (Marke und Modell)</label><input id="demo_fahrzeug" type="text" autocomplete="off" placeholder="z. B. VW Golf"></div>
+        <div><label for="demo_antrieb">Antriebsart</label>
+          <select id="demo_antrieb"><option value="">bitte wählen</option><option>Verbrenner</option><option>Hybrid</option><option>Elektro</option></select></div>
+        <div><label for="demo_besitz">Seit wann besitzen Sie dieses Fahrzeug</label><input id="demo_besitz" type="text" autocomplete="off" placeholder="z. B. seit 2022"></div>
+        <div><label for="demo_haeufig">Fahrhäufigkeit</label>
+          <select id="demo_haeufig"><option value="">bitte wählen</option><option>täglich</option><option>wöchentlich</option><option>seltener</option></select></div>
+        <div><label for="demo_assist">Erfahrung mit Fahrerassistenzsystemen (welche)</label><input id="demo_assist" type="text" autocomplete="off" placeholder="z. B. Spurhalteassistent, Tempomat, Einparkhilfe, Notbremsassistent"></div>
+      </div>
+      <div class="hint" id="demoHint"></div>
+      <button id="btnStart" class="btn primary">Studie jetzt starten</button>
+    </div>
+  </section>
+
+  <section id="main" class="hidden">
+    <div class="mainhead">
+      <span class="muted" id="counter"></span>
+      <span class="muted" id="idLabel"></span>
+    </div>
+    <div class="prog"><div id="progbar"></div></div>
+    <div id="cardHost"></div>
+    <div class="between">
+      <button class="btn" id="backBtn">Zurueck</button>
+      <button class="btn primary" id="nextBtn">Weiter</button>
+    </div>
+  </section>
+
+  <section id="closing" class="hidden">
+    <h1>Abschluss</h1>
+    <div class="card">
+      <h2>Leitfragen ueber alle Situationen</h2>
+      <p class="muted">Diese Fragen stellt die Interviewerin am Ende, ueber alle gesehenen Situationen hinweg.</p>
+      <ul id="finalQs"></ul>
+    </div>
+    <div class="card">
+      <p>Bitte speichern Sie zum Schluss die Antwortdatei und senden Sie sie der Interviewerin.</p>
+      <button class="btn primary" id="exportBtn">Antworten speichern</button>
+      <p class="muted" id="exportHint"></p>
+    </div>
+  </section>
+
+</div>
+
+<script src="use_cases_data.js"></script>
+<script>
+"use strict";
+
+var CASES = (window.USE_CASES && window.USE_CASES.length) ? window.USE_CASES : [];
+
+var FINAL_QUESTIONS = [
+  "In welchen Situationen war Ihnen ein Vorschlag lieber, in welchen eine selbststaendige Ausfuehrung?",
+  "Gab es eine Reaktion, die Ihnen unangenehm war? Was genau hat gestoert?",
+  "Wo fuehlten Sie sich bevormundet oder beobachtet?",
+  "Wie wichtig war Ihnen, dass das System erklaert, warum es etwas tut?",
+  "Was muesste das System koennen oder zeigen, damit Sie ihm mehr vertrauen?",
+  "Wuerden Sie ein solches System nutzen? Unter welchen Bedingungen?"
+];
+
+var DEMO_FIELDS = [
+  ["demo_alter","Alter"],["demo_geschlecht","Geschlecht"],
+  ["demo_bildung","Bildung oder Beruf"],["demo_technik","Technikaffinitaet"],
+  ["demo_fs","Fuehrerschein seit"],["demo_fahrzeug","Fahrzeug"],
+  ["demo_antrieb","Antriebsart"],["demo_besitz","Besitz seit"],
+  ["demo_haeufig","Fahrhaeufigkeit"],["demo_assist","Erfahrung Assistenzsysteme"]
+];
+
+var state = { id:"", idx:0, answers:[], demo:{} };
+
+function isPro(m){ return (m||"").toLowerCase().indexOf("proaktiv") !== -1; }
+
+function macheId(vorname, nachname){
+  var i = ((vorname||"?").trim().charAt(0) + (nachname||"?").trim().charAt(0)).toUpperCase();
+  var n = Math.floor(1000 + Math.random()*9000);
+  return "ID-" + (i.length===2?i:"XX") + "-" + n;
+}
+
+function themeProbe(c){
+  var t = ((c.konkrete_funktion||"")+" "+(c.situationsbeschreibung||"")+" "+(c.nutzer_meldung||"")).toLowerCase();
+  if(/route|navig|umfahr|ausweich/.test(t)) return "Wie empfinden Sie es, wenn das Fahrzeug Ihre Route eigenstaendig beeinflusst?";
+  if(/nachricht|senden|termin|meeting|videocall|einwähl|einwaehl|anruf|teilnahme/.test(t)) return "Waere es Ihnen recht, dass das Fahrzeug in Ihrem Namen handelt oder kommuniziert, oder moechten Sie das selbst tun?";
+  if(/innenkamera|kamera|kind|beifahrer|schläft|schlaf|anspannung|müde|muede|stress/.test(t)) return "Wie stehen Sie dazu, dass das Fahrzeug ueber die Innenkamera auf den Zustand der Insassen schliesst, um das zu tun?";
+  if(/glatt|eis|warn|rutsch|fahrbahn|sicht/.test(t)) return "Hilft Ihnen diese Reaktion in der Gefahrensituation, oder lenkt sie eher ab?";
+  if(/heiz|klima|licht|luft|fenster|umluft|ambiente|beleucht/.test(t)) return "Moechten Sie ueber solche Anpassungen informiert werden, oder sollen sie still im Hintergrund passieren?";
+  return "Was spricht fuer Sie fuer oder gegen diese Reaktion des Fahrzeugs?";
+}
+
+var GLYPHS = {
+  heat:'<path d="M9 4v9a3 3 0 1 0 4 0V4"/><path d="M9 8h4"/>',
+  air:'<path d="M3 8h13a3 3 0 1 0-3-3"/><path d="M3 14h16a3 3 0 1 1-3 3"/>',
+  light:'<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
+  nav:'<path d="M12 2l4 7-4 11-4-11z"/>',
+  audio:'<path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',
+  msg:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+  warn:'<path d="M12 2l10 18H2z"/><path d="M12 9v5M12 17h0"/>',
+  cam:'<rect x="3" y="6" width="18" height="13" rx="2"/><circle cx="12" cy="12" r="3"/>',
+  gen:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>'
+};
+function iconList(c){
+  var t = ((c.konkrete_funktion||"")+" "+(c.nutzer_meldung||"")).toLowerCase();
+  var keys=[]; function add(re,k){ if(re.test(t)&&keys.indexOf(k)===-1) keys.push(k); }
+  add(/heiz|sitzheiz|lenkrad|warm|temperatur/,"heat");
+  add(/klima|vorklimat|umluft|luft|fenster/,"air");
+  add(/licht|ambiente|beleucht|leucht/,"light");
+  add(/route|navig|umfahr|ausweich/,"nav");
+  add(/musik|audio|lautst|ton|sound|hörspiel|hoerspiel/,"audio");
+  add(/nachricht|senden|termin|meeting|call|anruf|teilnahme/,"msg");
+  add(/glatt|eis|warn|rutsch|schnee|fahrbahn/,"warn");
+  add(/kamera|kind|beifahrer/,"cam");
+  if(keys.length===0) keys.push("gen");
+  return keys.slice(0,3).map(function(k){ return '<div class="ic"><svg viewBox="0 0 24 24">'+GLYPHS[k]+'</svg></div>'; }).join("");
+}
+
+function getAns(i){
+  if(!state.answers[i]){ state.answers[i] = { modus_passt:"", empfehlung_reaktion:"", kommentar:"" }; }
+  return state.answers[i];
+}
+function optGroup(feld, werte, i){
+  var a = getAns(i);
+  return werte.map(function(w){ var sel=(a[feld]===w)?" sel":""; return '<span class="opt'+sel+'" data-feld="'+feld+'" data-wert="'+w+'">'+w+'</span>'; }).join("");
+}
+
+function renderCard(){
+  var i=state.idx, c=CASES[i], a=getAns(i), pro=isPro(c.vorgeschlagener_modus);
+  document.getElementById("counter").textContent = "Use Case " + (i+1) + " von " + CASES.length;
+  document.getElementById("idLabel").textContent = state.id;
+  document.getElementById("progbar").style.width = ((i+1)/CASES.length*100) + "%";
+
+  var host=document.getElementById("cardHost");
+  var kl=pro?"pro":"empf";
+  var pillText=pro?"Ausgefuehrt":"Vorschlag";
+
+  var krit=c.kriterien||{};
+  var detail="";
+  if(typeof c.konfidenz!=="undefined"){
+    detail='<details><summary>Konfidenz und Kriterien (optional)</summary>'
+      +'<div class="inner">Konfidenz: <b>'+c.konfidenz+'</b> (Schwelle '+(c.schwelle||0.65)+')<br>'
+      +'Sicherheit '+krit.sicherheit+', Dringlichkeit '+krit.dringlichkeit
+      +', Eingriffstiefe '+krit.eingriffstiefe+', Umkehrbarkeit '+krit.umkehrbarkeit+'</div></details>';
+  }
+  var foot=pro
+    ? '<div class="footline pro">Das Fahrzeug hat diese Funktion selbststaendig ausgefuehrt.</div>'
+    : '<div class="footline empf">Das Fahrzeug schlaegt diese Funktion vor.'
+      +'<div class="acceptrow">'
+      +'<span class="opt'+(a.empfehlung_reaktion==="angenommen"?" sel":"")+'" data-feld="empfehlung_reaktion" data-wert="angenommen">Annehmen</span>'
+      +'<span class="opt'+(a.empfehlung_reaktion==="abgelehnt"?" sel":"")+'" data-feld="empfehlung_reaktion" data-wert="abgelehnt">Ablehnen</span>'
+      +'</div></div>';
+
+  host.innerHTML =
+    '<div class="sit"><div class="eyebrow">Situation</div><p>'+ (c.situationsbeschreibung||"") +'</p></div>'
+    + '<div class="assist '+kl+'">'
+    +   '<div class="assisthead"><div class="eyebrow">Fahrzeugassistent</div><span class="pill '+kl+'">'+pillText+'</span></div>'
+    +   '<div class="icons">'+ iconList(c) +'</div>'
+    +   '<div class="msg">'+ (c.nutzer_meldung||c.konkrete_funktion) +'</div>'
+    +   '<div class="funk"><b>Funktion:</b> '+ (c.konkrete_funktion||"") +'</div>'
+    +   '<details><summary>Warum reagiert das Fahrzeug so?</summary><div class="inner">'+ (c.begruendung||"") +'</div></details>'
+    +   detail + foot
+    + '</div>'
+    + '<div class="leit"><div class="t">Leitfragen fuer das Gespraech</div><ul>'
+    +   '<li>'+themeProbe(c)+'</li>'
+    +   '<li>'+(pro?"Haetten Sie hier lieber selbst entschieden, also nur einen Vorschlag bekommen?":"Haetten Sie sich gewuenscht, dass das Fahrzeug das direkt erledigt?")+'</li>'
+    +   '<li>Wie sehr vertrauen Sie dem System hier, und was muesste es koennen, damit Sie ihm mehr vertrauen?</li>'
+    + '</ul></div>'
+    + '<div class="card">'
+    + '<h2>Ihre Einschaetzung</h2>'
+    + '<label class="field">Passt dieser Modus zur Situation?</label>'
+    + '<div class="row">'+optGroup("modus_passt",["Ja, passt","Nein, anderer Modus waere besser","Unsicher"],i)+'</div>'
+    + '<label class="field">Bitte denken Sie laut und begruenden Sie. Was spricht fuer oder gegen diese Reaktion, und wuerden Sie eine solche Funktion nutzen?</label>'
+    + '<textarea data-feld="kommentar" placeholder="Ihre Gedanken in eigenen Worten.">'+ (a.kommentar||"") +'</textarea>'
+    + '</div>';
+
+  Array.prototype.forEach.call(host.querySelectorAll(".opt"), function(el){
+    el.addEventListener("click", function(){
+      var feld=el.getAttribute("data-feld"), wert=el.getAttribute("data-wert");
+      var ans=getAns(state.idx);
+      ans[feld]=(ans[feld]===wert)?"":wert;
+      renderCard();
+    });
+  });
+  var ta=host.querySelector("textarea");
+  ta.addEventListener("input", function(){ getAns(state.idx).kommentar = ta.value; });
+
+  document.getElementById("backBtn").disabled = (i===0);
+  document.getElementById("nextBtn").textContent = (i===CASES.length-1) ? "Abschliessen" : "Weiter";
+}
+
+function pruefeBereit(){
+  var v=document.getElementById("vName").value.trim();
+  var n=document.getElementById("nName").value.trim();
+  var c=document.getElementById("consent").checked;
+  var bereit=v&&n&&c;
+  document.getElementById("btnWeiter").disabled=!bereit;
+  document.getElementById("loadInfo").textContent=bereit?"Bereit. Weiter zu den Angaben zur Person.":"Bitte Namen eingeben und Einwilligung bestaetigen.";
+}
+
+function leseDemo(){
+  var d={};
+  DEMO_FIELDS.forEach(function(f){ var el=document.getElementById(f[0]); d[f[1]]=el?el.value:""; });
+  return d;
+}
+
+function weiter(){
+  var v=document.getElementById("vName").value;
+  var n=document.getElementById("nName").value;
+  if(!document.getElementById("consent").checked || !v.trim() || !n.trim()){ pruefeBereit(); return; }
+  state.id=macheId(v,n);
+  document.getElementById("intro").classList.add("hidden");
+  document.getElementById("demo").classList.remove("hidden");
+  window.scrollTo(0,0);
+}
+function start(){
+  if(!CASES.length){ document.getElementById("demoHint").textContent="Keine Use Cases geladen. Bitte zuerst studienset.py ausfuehren."; return; }
+  state.demo=leseDemo();
+  document.getElementById("demo").classList.add("hidden");
+  document.getElementById("main").classList.remove("hidden");
+  renderCard();
+}
+
+function next(){ if(state.idx<CASES.length-1){ state.idx++; renderCard(); window.scrollTo(0,0); } else { goClosing(); } }
+function back(){ if(state.idx>0){ state.idx--; renderCard(); window.scrollTo(0,0); } }
+
+function goClosing(){
+  document.getElementById("main").classList.add("hidden");
+  document.getElementById("closing").classList.remove("hidden");
+  document.getElementById("finalQs").innerHTML = FINAL_QUESTIONS.map(function(q){ return "<li>"+q+"</li>"; }).join("");
+  window.scrollTo(0,0);
+}
+
+function exportJSON(){
+  var daten = {
+    proband: state.id,
+    zeitpunkt: new Date().toISOString(),
+    soziodemographie: state.demo,
+    antworten: CASES.map(function(c,i){
+      var a=getAns(i);
+      return {
+        szenario_id: c.szenario_id,
+        szenario: c.szenario,
+        variante: c.variante,
+        praesentierter_modus: c.vorgeschlagener_modus,
+        modus_passt: a.modus_passt,
+        empfehlung_reaktion: a.empfehlung_reaktion,
+        kommentar: a.kommentar
+      };
+    })
+  };
+  var blob=new Blob([JSON.stringify(daten,null,2)],{type:"application/json"});
+  var url=URL.createObjectURL(blob);
+  var link=document.createElement("a");
+  link.href=url; link.download="antworten_"+state.id+".json";
+  document.body.appendChild(link); link.click(); document.body.removeChild(link);
+  document.getElementById("exportHint").textContent="Gespeichert als antworten_"+state.id+".json";
+}
+
+document.getElementById("vName").addEventListener("input", pruefeBereit);
+document.getElementById("nName").addEventListener("input", pruefeBereit);
+document.getElementById("consent").addEventListener("change", pruefeBereit);
+document.getElementById("btnWeiter").addEventListener("click", weiter);
+document.getElementById("btnStart").addEventListener("click", start);
+document.getElementById("nextBtn").addEventListener("click", next);
+document.getElementById("backBtn").addEventListener("click", back);
+document.getElementById("exportBtn").addEventListener("click", exportJSON);
+pruefeBereit();
+</script>
+</body>
+</html>
